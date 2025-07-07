@@ -101,7 +101,7 @@ GitHub中的项目仓库结构如下：
    ![alt text](<img/截屏2025-07-06 13.45.20.png>)
    ![alt text](<img/截屏2025-07-06 13.46.29.png>)
 
-### 2. 设置Amazon Q developer CLI的密钥
+### 2. 设置Amazon Q developer CLI的凭证
 
 在一台Linux服务器中[安装并登录Amazon Q CLI](https://docs.aws.amazon.com/zh_cn/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-ubuntu)，然后执行以下命令，将Amazon Q developer 登录凭证保存到s3
 ```
@@ -113,6 +113,30 @@ aws s3 sync ~/.local/share/amazon-q s3://${S3BucketName}/amazonq-credentials/ama
 
 所有密钥和变量需要在GitHub仓库的设置中配置。路径为：
 **仓库 > Settings > Secrets and variables > Actions**
+
+此流程需要一个AWS IAM用户以及AK/SK，用于下载第2步中上传的Q CLI凭证，建议只给该用户以下权限：
+```
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:ListBucket",
+                "s3:GetBucketLocation",
+                "s3:GetBucketVersioning"
+            ],
+            "Resource": [
+                "arn:aws:s3:::xxxxx", #将xxxxx替换为你的s3桶
+                "arn:aws:s3:::xxxxx/*"
+            ]
+        }
+    ]
+}
+```
 
 1. **GITHUB_TOKEN**
    - 描述：GitHub自动提供的令牌，用于在PR中添加评论
